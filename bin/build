@@ -32,4 +32,4 @@ cd $OUTPUT_DIR
 echo "dnu restore"
 dnu restore
 
-cp -R $HOME/. $MOD_DIR/home
+mv $HOME $MOD_DIR/home

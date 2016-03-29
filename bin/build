@@ -7,29 +7,31 @@ if [[ ! $INPUT_DIR ]] || [[ ! $OUTPUT_DIR ]]; then
 fi
 
 mkdir -p $INPUT_DIR
-mkdir -p $OUTPUT_DIR
 
-if [[ ! -d $INPUT_DIR ]] || [[ ! -d $OUTPUT_DIR ]]; then
-  echo "Input/Output directories must exist."
+if [[ ! -d $INPUT_DIR ]]; then
+  echo "Input directory must exist."
   exit 1
 fi
 
+# move contents of input to output
+if [[ -d $OUTPUT_DIR ]]; then
+  rm -rf $OUTPUT_DIR
+fi
+mv $INPUT_DIR $OUTPUT_DIR
+
+# import home from image
 cp -R /opt/home/. $HOME
 
-# mv $INPUT_DIR/{*,.*} $OUTPUT_DIR > /dev/null 2>&1
-cp -R $INPUT_DIR/. $OUTPUT_DIR
-
-MOD_DIR=$OUTPUT_DIR/.modulus
-mkdir -p $MOD_DIR
-
-source $HOME/.dnx/dnvm/dnvm.sh
-
 # use dnvm to install .net core
+source $HOME/.dnx/dnvm/dnvm.sh
 echo "dnvm upgrade -r coreclr"
 dnvm upgrade -r coreclr
 
 cd $OUTPUT_DIR
 echo "dnu restore"
 dnu restore
+
+MOD_DIR=$OUTPUT_DIR/.modulus
+mkdir -p $MOD_DIR
 
 mv $HOME $MOD_DIR/home
